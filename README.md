@@ -1,163 +1,165 @@
-# NeuroSense · 多模态感知与认知神经网络
+# NeuroSense · Multimodal Perception & Cognitive Neural Network
 
-> **English summary.** NeuroSense is a local web app that turns sound (audio files, videos, or a live microphone) into real-time 3D visualizations: an acoustic manifold graph, a musical-coordinate 3D space, a multi-track analysis recorder, a 3D acoustic trajectory with lightning effects, and a live-training neural network whose own source code is shown executing in 3D. Optional AI recognition adds multilingual captions (Whisper), 527-class sound recognition (AudioSet AST) and bird species (BirdNET). Everything runs on your own computer: a Python backend plus your browser. See **Quick start** below.
+**English | [简体中文](README.zh-CN.md)**
 
-把声音（音频文件、视频、麦克风直播）实时变成 3D 可视化与可训练的图数据。全部在你自己的电脑上运行：Python 后端负责分析，浏览器负责显示，音频不会上传到任何服务器。
+Turn sound (audio files, videos or a live microphone) into real-time 3D visualizations and trainable graph data. Everything runs on your own computer: a Python backend does the analysis and your browser draws it. Your audio is never uploaded to any server.
 
-当前版本：**v0.7**
-
----
-
-## 界面
-
-```
-┌──────── 工具栏：输入源 · 播放 · 色带 · 音高范围 · 时间窗 · 字幕 · 识别状态 ────────┐
-├────────────────────┬─────────────────────────┬───────────────────────┤
-│ 声学映射网络         │ 神经网络 · 实时训练        │ 3D 声音空间（音乐坐标）   │
-│ 事件节点 + 连线 + 字幕 │ MLP 权重 / 前向 / 反向 / 损失 │ 声像 × 时间 × 音高       │
-├────────────────────┼─────────────────────────┼───────────────────────┤
-│ 多道分析记录          │ 训练代码 · 3D 执行视图      │ 声学轨迹 3D（闪电）       │
-│ 频谱 / 色度 / 振幅 …   │ 源代码随训练逐行高亮 + 日志  │ 3D 游走轨迹 + 雷击        │
-└────────────────────┴─────────────────────────┴───────────────────────┘
-```
-
-每个面板左上角的下拉框都可以切换成其它模块。窄屏（手机）下面板纵向排列。
+Current version: **v0.7**
 
 ---
 
-## 快速开始
+## Interface
 
-### 需要
+```
+┌──── Toolbar: source · play · palette · pitch range · time window · captions · AI status ────┐
+├──────────────────────┬──────────────────────────┬──────────────────────────┤
+│ Acoustic manifold     │ Neural net · live training │ 3D sound space (musical)  │
+│ event nodes + edges   │ MLP weights / fwd / back   │ pan × time × pitch        │
+├──────────────────────┼──────────────────────────┼──────────────────────────┤
+│ Multi-track recorder  │ Training code · 3D view    │ Acoustic trajectory 3D    │
+│ spectrogram, chroma … │ source lines light up live │ 3D path + lightning       │
+└──────────────────────┴──────────────────────────┴──────────────────────────┘
+```
 
-- **Python 3.10 或更高**（只用基础功能时 3.14 也可以；要用识别功能建议 3.12，见下文）
-- **Chrome / Edge / Firefox** 浏览器
-- 约 100 MB 磁盘空间（不含识别模型）
+The drop-down at the top-left of every panel switches it to another module. On narrow screens (phones) the panels stack vertically.
+
+> The interface labels are in Chinese. The tables below give the English meaning of each module.
+
+---
+
+## Quick start
+
+### Requirements
+
+- **Python 3.10 or newer** (3.14 works for the core features; use 3.12 if you want AI recognition, see below)
+- **Chrome, Edge or Firefox**
+- About 100 MB of disk space (not counting AI models)
 
 ### Windows
 
-1. 安装 Python：到 <https://www.python.org/downloads/> 下载安装，**安装时勾选 “Add python.exe to PATH”**。
-2. 下载本项目：GitHub 页面 → 绿色 **Code** 按钮 → **Download ZIP**，解压到任意位置（路径最好不含中文和空格，例如 `D:\neurosense`）。
-   或者用 Git：`git clone <仓库地址>`
-3. 双击 **`start.bat`**。第一次运行会自动安装基础依赖（约 1 分钟），然后自动打开 <http://127.0.0.1:8000>。
+1. Install Python from <https://www.python.org/downloads/>. **Tick "Add python.exe to PATH" during setup.**
+2. Download this project: on the GitHub page click the green **Code** button → **Download ZIP**, then unzip it anywhere (a path without spaces or non-English characters is safest, e.g. `D:\neurosense`).
+   Or with Git: `git clone https://github.com/tianmingliu-pixel/Sound-network-neuron.git`
+3. Double-click **`start.bat`**. The first run installs the base packages (about a minute) and then opens <http://127.0.0.1:8000>.
 
 ### macOS / Linux
 
 ```bash
-git clone <仓库地址> neurosense
+git clone https://github.com/tianmingliu-pixel/Sound-network-neuron.git neurosense
 cd neurosense
 chmod +x start.sh
 ./start.sh
 ```
 
-浏览器打开 <http://127.0.0.1:8000>。
+Then open <http://127.0.0.1:8000>.
 
-### 开始使用
+### Using it
 
-- **文件 / 视频**：从下拉列表选择文件，点「上传」或直接把文件拖到页面上，然后点「播放」。首次启动会自动生成一个演示音 `demo.wav`。
-- **直播**：切到「直播」，点「开始直播」，在浏览器弹窗中允许麦克风（和摄像头）。
-- **退出**：在运行服务器的黑色窗口里按 `Ctrl + C`，或直接关闭窗口。
+- **File / video** (文件 / 视频): pick a file from the list, or click **上传** (Upload) or drag a file onto the page, then press **播放** (Play). A demo tone, `demo.wav`, is generated on first start.
+- **Live** (直播): switch to the Live tab, press **开始直播** (Start live) and allow the microphone (and camera) in the browser prompt.
+- **Quit**: press `Ctrl + C` in the black server window, or just close it.
 
-> 不装识别功能也能使用全部可视化，以及「神经网络 · 实时训练」的“自编码”模式。
+> All visualizations, and the "autoencoder" mode of the live-training module, work without the AI recognition packages.
 
 ---
 
-## 识别功能（可选）：字幕 / 声音类别 / 鸟种
+## AI recognition (optional): captions / sound classes / bird species
 
-| 识别 | 模型 | 例子 |
+| Recognition | Model | Example |
 |---|---|---|
-| 语音字幕 | Whisper（faster-whisper），99 种语言，自动识别语种 | `[英语] Hello there` |
-| 声音类别 | AST，AudioSet 527 类，归为 9 大类 | `音乐 46%`、`动物 · 鸟鸣 82%` |
-| 鸟种 | BirdNET，6000+ 鸟种，检测到鸟叫时才调用 | `Erithacus rubecula 81%` |
+| Speech captions | Whisper (faster-whisper), 99 languages, automatic language detection | `[English] Hello there` |
+| Sound classes | AST, AudioSet 527 classes, grouped into 9 categories | `Music 46%`, `Animal · bird song 82%` |
+| Bird species | BirdNET, 6,000+ species, only called when birdsong is detected | `Erithacus rubecula 81%` |
 
-识别全部在本机 CPU 上运行（AMD 显卡也可以）。字幕比说话慢 2–5 秒属于正常。
+Recognition runs on your CPU (AMD GPUs are fine). Captions trailing speech by 2–5 seconds is normal.
 
-### Windows 一键安装（推荐）
+### Windows one-click install (recommended)
 
-双击 **`install-ai.bat`**。它会建立一个 Python 3.12 的独立环境 `backend\.venv`，安装 faster-whisper、torch、transformers、birdnetlib、tensorflow，并预先下载模型。之后照常用 `start.bat` 启动，它会自动使用这个环境。
+Double-click **`install-ai.bat`**. It creates a separate Python 3.12 environment in `backend\.venv`, installs faster-whisper, torch, transformers, birdnetlib and tensorflow, and pre-downloads the models. Then start as usual with `start.bat`, which picks up that environment automatically.
 
-网络不稳定时（SSL 报错、下载很慢），在 PowerShell 中运行：`.\install-ai.bat -Mirror`
+On an unreliable network (SSL errors, very slow downloads) run this in PowerShell: `.\install-ai.bat -Mirror`
 
-### 手动安装（任何系统）
+### Manual install (any OS)
 
 ```bash
 cd backend
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-python -m pip install faster-whisper transformers          # 字幕 + 声音类别
-python -m pip install birdnetlib tensorflow librosa        # 鸟种（需要 Python ≤ 3.12）
-python download_models.py                                   # 下载模型到 backend/models/
+python -m pip install faster-whisper transformers          # captions + sound classes
+python -m pip install birdnetlib tensorflow librosa        # bird species (needs Python ≤ 3.12)
+python download_models.py                                   # downloads models into backend/models/
 python server.py
 ```
 
-- 只装需要的部分即可：只装 `faster-whisper` 就只有字幕。
-- 检查安装情况：`python check_ai.py`，结果同时保存在 `backend/ai_check.txt`。
-- 完全关闭识别：`python server.py --no-ai`
-- 工具栏右上角的状态显示 **字幕✓ 声音✓ 鸟种✓** 表示就绪。
+- Install only what you need: with just `faster-whisper` you get captions only.
+- Check your installation: `python check_ai.py` (the report is also saved to `backend/ai_check.txt`).
+- Turn recognition off completely: `python server.py --no-ai`
+- When the status at the top-right shows **字幕✓ 声音✓ 鸟种✓** (captions / sound / birds), everything is ready.
 
-### 模型下载
+### Downloading models
 
-`download_models.py` 用系统自带的 `curl` 下载（支持断点续传），保存到 `backend/models/`，启动时优先使用本地模型：
+`download_models.py` uses the system `curl` (resumable downloads) and saves models to `backend/models/`. The server uses local models first.
 
 ```bash
-python download_models.py            # 从 huggingface.co 下载
-python download_models.py --mirror   # 从 hf-mirror.com 镜像下载（中国大陆更快）
-python download_models.py small      # 改用 Whisper small（更准，更慢）
+python download_models.py            # download from huggingface.co
+python download_models.py --mirror   # download from the hf-mirror.com mirror (faster in mainland China)
+python download_models.py small      # use Whisper small instead (more accurate, slower)
 ```
 
-Whisper base 约 150 MB，AST 约 350 MB。
+Whisper base is about 150 MB, AST about 350 MB.
 
-### 设置（环境变量）
+### Settings (environment variables)
 
-| 变量 | 作用 |
+| Variable | Effect |
 |---|---|
-| `NEUROSENSE_WHISPER` | `tiny` / `base`（默认）/ `small` / `medium` / `large-v3` |
-| `NEUROSENSE_LAT`、`NEUROSENSE_LON` | 录音地点经纬度，BirdNET 按地区过滤鸟种 |
-| `HF_ENDPOINT` | 模型下载镜像，例如 `https://hf-mirror.com` |
+| `NEUROSENSE_WHISPER` | `tiny` / `base` (default) / `small` / `medium` / `large-v3` |
+| `NEUROSENSE_LAT`, `NEUROSENSE_LON` | Recording location; BirdNET filters species by region |
+| `HF_ENDPOINT` | Model download mirror, e.g. `https://hf-mirror.com` |
 
-Windows PowerShell 写法：`$env:NEUROSENSE_WHISPER="small"`；macOS / Linux：`export NEUROSENSE_WHISPER=small`
+Windows PowerShell: `$env:NEUROSENSE_WHISPER="small"`; macOS / Linux: `export NEUROSENSE_WHISPER=small`
 
 ---
 
-## 常见问题
+## Troubleshooting
 
-| 现象 | 解决 |
+| Symptom | Fix |
 |---|---|
-| 双击 `start.bat` 提示找不到 Python | 重新安装 Python 并勾选 “Add python.exe to PATH” |
-| `pip` 报 `SSL: RECORD_LAYER_FAILURE` 或下载中断 | 网络干扰了 Python 的加密连接。在 `backend` 目录运行 `python install_ai_curl.py`（改用 curl 下载，可续传），或加 `--mirror` 用清华镜像 |
-| 启动后报 `CAS Client Error` / `error decoding response body` | 模型下载被中断。运行 `python download_models.py`（或加 `--mirror`），再重启 |
-| 识别状态显示“未安装” | 对应的包没装，见上文「识别功能」 |
-| 鸟种在 Python 3.14 上装不上 | TensorFlow 还没有 3.14 版本。用 `install-ai.bat`（自动建 3.12 环境），或只用字幕和声音类别 |
-| 页面布局没更新 | 浏览器缓存：按 `Ctrl + F5` 强制刷新 |
-| 某个视频 / 音频放不出来 | 会自动转码；也可以先转成 MP3 / MP4 再上传 |
-| 端口 8000 被占用 | 关闭另一个正在运行的 NeuroSense 窗口 |
+| `start.bat` says Python was not found | Reinstall Python and tick "Add python.exe to PATH" |
+| `pip` fails with `SSL: RECORD_LAYER_FAILURE` or downloads break off | Something on the network is interfering with Python's encrypted connections. In `backend`, run `python install_ai_curl.py` (downloads with curl, resumable), or add `--mirror` to use the Tsinghua mirror |
+| `CAS Client Error` / `error decoding response body` at startup | A model download was interrupted. Run `python download_models.py` (or with `--mirror`), then restart |
+| A recognizer shows "未安装" (not installed) | The package is missing; see "AI recognition" above |
+| Bird species won't install on Python 3.14 | TensorFlow has no 3.14 build yet. Use `install-ai.bat` (creates a 3.12 environment), or use captions and sound classes only |
+| The page layout didn't update | Browser cache: press `Ctrl + F5` to force a reload |
+| A video or audio file won't play | It is converted automatically; you can also convert it to MP3 / MP4 before uploading |
+| Port 8000 is already in use | Close the other NeuroSense window that is still running |
 
 ---
 
-## 模块说明
+## Modules
 
-| 模块 | 内容 |
+| Module (UI label) | What it shows |
 |---|---|
-| **声学映射网络** | 每个声音事件（音节、音符、鼓点）是一个节点；白线 = 时间顺序，青线 = 频谱相似。连线随时间变细褪色。坐标可切换「固定轴」或「PCA」。顶部显示字幕。 |
-| **神经网络 · 实时训练** | 在浏览器里训练一个小型多层感知机（31→20→14→9）。“蒸馏”模式：只看 31 个声学特征，学习模仿 AST 的 9 大类判断；“自编码”模式：把特征压缩到 3 维再还原，不需要识别模型。显示权重（橙正蓝负）、前向（青）/ 反向（品红）脉冲、损失与一致率曲线。 |
-| **训练代码 · 3D 执行视图** | 训练模块自己的源代码（运行时从 `train.js` 读取）放在 3D 执行环上：① 特征 → ② 前向 → ③ 损失 → ④ 反向 → ⑤ Adam → ⑥ 验证。与上方动画同步，正在执行的代码卡片飞到镜头前逐行高亮，并显示当时的真实数值和训练日志。 |
-| **3D 声音空间（音乐坐标）** | X = 声像（左—右），Y = 时间，Z = 音高（YIN 基频，按音符刻度）；颜色与大小 = 力度（pp–ff）。可开启音符吸附。 |
-| **多道分析记录** | 频谱图、色度图、振幅、频谱质心、音调性、事件、识别结果，按时间滚动；悬停读数。 |
-| **声学轨迹 3D** | 地震仪式的 3D 游走轨迹：x = 音色（频谱质心），y = 音高或音调性，z = 时间；颜色 = 振幅。「闪电 · 夜空」特效：强起音时从空中劈下分叉闪电，地面扩散冲击环。可选视角、旋转速度。 |
-| 其它可选 | 声音识别仪表（9 大类强度条）、字幕与标签记录（筛选、导出 SRT / CSV）、多尺度分析 3D、振幅 × 质心散点、空间粒子环 |
+| **Acoustic manifold** (声学映射网络) | Each sound event (syllable, note, drum hit) is a node. White lines = time order, cyan lines = spectral similarity. Lines thin and fade with age. Coordinates can be fixed axes or PCA. Captions appear at the top. |
+| **Neural net · live training** (神经网络 · 实时训练) | Trains a small multilayer perceptron (31→20→14→9) in the browser. *Distillation* mode: from 31 acoustic features only, it learns to imitate AST's 9-category judgement. *Autoencoder* mode: compresses the features to 3 dimensions and reconstructs them, no AI models needed. Shows weights (orange positive, blue negative), forward (cyan) and backward (magenta) pulses, and loss / agreement curves. |
+| **Training code · 3D execution view** (训练代码 · 3D 执行视图) | The training module's own source code (read from `train.js` at runtime) arranged on a 3D execution ring: ① features → ② forward → ③ loss → ④ backward → ⑤ Adam → ⑥ validation. In sync with the animation above, the card being executed flies to the front, its lines light up one by one with the live values of that moment, and a training log scrolls below. |
+| **3D sound space, musical axes** (3D 声音空间（音乐坐标）) | X = stereo pan (left–right), Y = time, Z = pitch (YIN fundamental, on a note scale). Colour and size = dynamics (pp–ff). Optional snap-to-note. |
+| **Multi-track recorder** (多道分析记录) | Spectrogram, chromagram, amplitude, spectral centroid, tonality, events and recognition results, scrolling in time; hover to read values. |
+| **Acoustic trajectory 3D** (声学轨迹 3D) | A seismograph-like path wandering in 3D: x = timbre (spectral centroid), y = pitch or tonality, z = time; colour = amplitude. The "lightning · night sky" effect strikes branching bolts from the sky on strong onsets, with a shock ring spreading on the floor. Selectable viewpoint and rotation speed. |
+| Others | Sound recognition meter (9 category bars), captions & labels log (filter, export SRT / CSV), multi-scale analysis 3D, amplitude × centroid scatter, spatial particle ring |
 
-工具栏的「色带」「音高范围」（预设 / 自适应 / 自定义）作用于所有和音高有关的模块。
+The toolbar's **色带** (palette) and **音高范围** (pitch range: presets / adaptive / custom) apply to every pitch-related module.
 
 ---
 
-## 导出给 GNN
+## Export for GNNs
 
-点「导出图」得到 `<文件名>.graph.json`：
+Click **导出图** (Export graph) to get `<file name>.graph.json`:
 
-| 字段 | 内容 |
+| Field | Content |
 |---|---|
-| `x` | 节点特征，每个节点 68 维：64 个频段均值 + 对数质心、振幅、音调性、时长 |
-| `edge_index` | `[[源...], [目标...]]`，PyTorch Geometric 约定 |
-| `edge_type` | 0 = 时序边，1 = 相似边 |
-| `nodes` | 每个节点的时间戳、坐标等完整信息 |
+| `x` | Node features, 68 per node: 64 band means + log centroid, amplitude, tonality, duration |
+| `edge_index` | `[[sources...], [targets...]]`, PyTorch Geometric convention |
+| `edge_type` | 0 = temporal edge, 1 = similarity edge |
+| `nodes` | Full per-node info: timestamps, coordinates, etc. |
 
 ```python
 import json, torch
@@ -171,74 +173,75 @@ data = Data(x=torch.tensor(g["x"], dtype=torch.float),
 
 ---
 
-## 工作原理
+## How it works
 
 ```
-<video> 文件 / 麦克风 → AudioWorklet 截取 PCM（48 kHz）
-     → WebSocket → 后端 StreamSession：STFT 64 频带、频谱质心、音调性、色度、YIN 基频、事件切分、建图
-     ← 特征帧（60 fps）+ 事件节点 + 边 ← 识别引擎（后台线程：Whisper / AST / BirdNET）
-     → 浏览器各模块绘制（three.js）；「实时训练」用这些特征和 AST 标签在浏览器里训练
+<video> file / microphone → AudioWorklet captures PCM (48 kHz)
+     → WebSocket → backend StreamSession: STFT 64 bands, spectral centroid, tonality, chroma,
+                   YIN pitch, event segmentation, graph building
+     ← feature frames (60 fps) + event nodes + edges ← recognition engine (background thread: Whisper / AST / BirdNET)
+     → browser modules draw them (three.js); "live training" trains in the browser on these features and AST labels
 ```
 
-- 浏览器负责解码所有媒体格式；浏览器不支持的格式（WMA、AIFF、AVI、WMV 等）由后端用 ffmpeg 自动转码（`imageio-ffmpeg` 自带 ffmpeg）。
-- 直播时关闭浏览器的回声消除、降噪和自动增益，保留原始信号。
+- The browser decodes all media. Formats it can't play (WMA, AIFF, AVI, WMV, …) are converted by the backend with ffmpeg (bundled via `imageio-ffmpeg`).
+- In live mode the browser's echo cancellation, noise suppression and auto gain are turned off to keep the raw signal.
 
-## 文件结构
+## Project structure
 
 ```
-start.bat / start.sh      一键启动
-install-ai.bat            Windows：一键安装识别功能
+start.bat / start.sh      one-click launch
+install-ai.bat            Windows: one-click AI recognition install
 backend/
-  server.py               HTTP + WebSocket 服务
-  stream_engine.py        流式分析与建图
-  audio_engine.py         STFT、YIN 基频、演示音生成
-  recognizers.py          识别引擎（Whisper / AST / BirdNET）
-  labels_zh.py            中文标签与 9 大类分组
-  media_io.py             上传：文件名清洗、格式识别、转码
-  download_models.py      用 curl 下载识别模型
-  install_ai_curl.py      用 curl 安装 Python 包（绕过 pip 下载中断）
-  check_ai.py             识别功能自检
-  requirements.txt        基础依赖
-  requirements-ai.txt     识别功能依赖（可选）
+  server.py               HTTP + WebSocket server
+  stream_engine.py        streaming analysis and graph building
+  audio_engine.py         STFT, YIN pitch, demo tone
+  recognizers.py          recognition engine (Whisper / AST / BirdNET)
+  labels_zh.py            Chinese labels and the 9 categories
+  media_io.py             uploads: file-name cleaning, format detection, conversion
+  download_models.py      download AI models with curl
+  install_ai_curl.py      install Python packages with curl (works around broken pip downloads)
+  check_ai.py             AI self-check
+  requirements.txt        base dependencies
+  requirements-ai.txt     AI dependencies (optional)
 frontend/
-  index.html  style.css  main.js  layout.js（面板布局与模块注册）
+  index.html  style.css  main.js  layout.js (panel layout and module registry)
   audio-io.js  worklet.js  palette.js
-  core/                   store（共享数据）、panel（面板框架）、three-base（3D 基类）
-  modules/                各可视化模块（manifold、train、codeview、space3d、recorder、seismo …）
+  core/                   store (shared data), panel (panel frame), three-base (3D base class)
+  modules/                visualization modules (manifold, train, codeview, space3d, recorder, seismo …)
 ```
 
-## 扩展：新增一个模块
+## Adding a module
 
-1. 在 `frontend/modules/` 新建一个类（接口见 `core/panel.js` 顶部注释），数据从共享的 `store` 读取：
+1. Create a class in `frontend/modules/` (the interface is described at the top of `core/panel.js`) and read data from the shared `store`:
 
 ```js
 export class MyModule {
-  static title = "我的模块";
+  static title = "My module";
   constructor({ body, tools, store }) {}
-  onFrame(frame) {}        // 每帧特征（可选）
-  onEvent(node, edges) {}  // 每个声音事件（可选）
-  render(now) {}           // 每个动画帧
+  onFrame(frame) {}        // per-frame features (optional)
+  onEvent(node, edges) {}  // each sound event (optional)
+  render(now) {}           // every animation frame
   resize(w, h) {}
   dispose() {}
 }
 ```
 
-2. 在 `frontend/layout.js` 的 `REGISTRY` 中注册，并加到某个面板的 `options`。
-3. 3D 模块可以继承 `core/three-base.js` 的 `ThreeModule`。
+2. Register it in `REGISTRY` in `frontend/layout.js` and add it to a panel's `options`.
+3. 3D modules can extend `ThreeModule` from `core/three-base.js`.
 
-## 已知限制
+## Known limitations
 
-- 方位只来自左右声道的能量差（声像），不是真正的三维声源定位。
-- 「实时训练」的权重只保存在浏览器内存中，刷新页面后重新训练。
-- 首次打开页面需要联网加载 three.js（来自 unpkg.com）。
+- Direction comes only from the left/right level difference (stereo pan); it is not true 3D source localization.
+- Live-training weights live in browser memory only; reloading the page starts training over.
+- The first page load needs internet access to fetch three.js (from unpkg.com).
 
-## 路线图
+## Roadmap
 
-- [x] v0.2 三种输入源、流式分析、声学流形、图导出
-- [x] v0.4 识别：多语种字幕、AudioSet 声音类别、BirdNET 鸟种
-- [x] v0.6 音乐坐标 3D 空间、3D 闪电轨迹、多格式上传与转码
-- [x] v0.7 神经网络实时训练 + 训练代码 3D 执行视图
-- [ ] 后端 PyTorch 训练，权重可保存，前端同步显示
-- [ ] Demucs 音源分离：每个声源一条独立轨迹
-- [ ] 视觉分支：DINOv2 → 场景图 → GNN，与声音事件图融合
-- [ ] 麦克风阵列 + SELD 声源定位
+- [x] v0.2 Three input sources, streaming analysis, acoustic manifold, graph export
+- [x] v0.4 Recognition: multilingual captions, AudioSet sound classes, BirdNET species
+- [x] v0.6 Musical-axes 3D space, 3D lightning trajectory, multi-format upload and conversion
+- [x] v0.7 Live neural-network training + 3D view of the training code
+- [ ] Backend PyTorch training with saved weights, mirrored in the browser
+- [ ] Demucs source separation: one trajectory per source
+- [ ] Vision branch: DINOv2 → scene graph → GNN, fused with the sound-event graph
+- [ ] Microphone array + SELD sound-source localization
