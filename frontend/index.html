@@ -24,7 +24,7 @@
     </div>
 
     <div class="group" id="src-file">
-      <select id="file" aria-label="媒体文件"></select>
+      <select id="file" aria-label="媒体文件" translate="no"></select>
       <label class="btn ghost" title="也可以把文件直接拖到页面上">上传<input id="upload" type="file" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.opus,.wma,.aiff,.aif,.amr,.ape,.ac3,.mka,.mkv,.mov,.avi,.wmv,.flv,.3gp,.ts,.mpg" hidden /></label>
       <button id="play" class="btn" disabled>▶ 播放</button>
       <input id="seek" type="range" min="0" max="1" step="0.01" value="0" disabled aria-label="进度" />
@@ -73,6 +73,7 @@
       <button id="clear" class="btn ghost">清空</button>
       <button id="export" class="btn ghost">导出图</button>
       <button id="cc" class="btn ghost on" title="显示 / 隐藏字幕">字幕</button>
+      <button id="lang" class="btn ghost" translate="no" title="中文 / English">EN</button>
       <span id="ai" class="ai-chip" title="识别引擎状态">识别 …</span>
       <span id="status" class="status">未连接</span>
     </div>

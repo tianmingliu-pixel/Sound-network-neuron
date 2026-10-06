@@ -77,7 +77,7 @@ export class TranscriptModule {
     this.list.innerHTML = rows.map((r) => {
       if (r.kind === "caption") {
         return `<div class="row cap" data-t="${r.t}" data-te="${r.c.t_end}"><span class="tm">${fmt(r.t)}</span>
-          <span class="tag lang">${esc(r.c.lang_name)}</span><span class="txt">${esc(r.c.text)}</span></div>`;
+          <span class="tag lang">${esc(r.c.lang_name)}</span><span class="txt" translate="no">${esc(r.c.text)}</span></div>`;
       }
       if (r.kind === "sound") {
         const g = r.top.group;

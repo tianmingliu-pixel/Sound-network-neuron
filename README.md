@@ -23,7 +23,7 @@ Current version: **v0.7**
 
 The drop-down at the top-left of every panel switches it to another module. On narrow screens (phones) the panels stack vertically.
 
-> The interface labels are in Chinese. The tables below give the English meaning of each module.
+> **Language:** the **EN / 中文** button in the toolbar switches the whole interface between English and Chinese. The choice is remembered; the first visit follows your browser language. Chinese labels are kept in parentheses below for reference.
 
 ---
 

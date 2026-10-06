@@ -2,6 +2,7 @@
 //   输入源（文件 / 视频 / 直播）→ WebSocket → 共享仓库 store → 各面板模块
 //   布局与模块在 layout.js 中配置
 
+import { lang, setLang } from "./i18n.js";   // 必须最先导入：之后创建的文字都会被翻译
 import { InputManager } from "./audio-io.js";
 import { store } from "./core/store.js";
 import { Panel } from "./core/panel.js";
@@ -24,6 +25,16 @@ const hooks = {
   seek(t) { if (io.mode === "file") ui.video.currentTime = t; },
 };
 const panels = LAYOUT.map((cfg) => new Panel(ui.workspace, cfg, REGISTRY, { store, hooks }));
+
+// 中英文切换：重建面板以重画 3D 文字贴图（训练类模块每帧重画文字，保留其训练状态）
+const langBtn = $("lang");
+const langLabel = () => { langBtn.textContent = lang === "zh" ? "EN" : "中文"; };
+langLabel();
+langBtn.onclick = () => setLang(lang === "zh" ? "en" : "zh");
+window.addEventListener("langchange", () => {
+  langLabel();
+  for (const p of panels) if (!REGISTRY[p.key].keepOnLang) p.use(p.key);
+});
 const broadcast = (method, ...args) => panels.forEach((p) => p.call(method, ...args));
 
 // 视频画中画放在上方面板里（面板外壳不随模块切换而重建）
@@ -307,7 +318,7 @@ function updateCaptions() {
   ccState.textContent = state;
   ccLines.innerHTML = recent.map((c, i) => {
     const latest = i === recent.length - 1 && t - c.t_end < 6;
-    return `<div class="cd-line${latest ? " latest" : ""}"><span class="cc-lang">${escHtml(c.lang_name)}</span><span class="cc-text">${escHtml(c.text)}</span></div>`;
+    return `<div class="cd-line${latest ? " latest" : ""}"><span class="cc-lang">${escHtml(c.lang_name)}</span><span class="cc-text" translate="no">${escHtml(c.text)}</span></div>`;
   }).join("");
   const chips = [];
   if (snd) for (const l of snd.labels.slice(0, 3)) {

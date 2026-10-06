@@ -103,7 +103,7 @@ class MLP {
       const y = acts[L];
       total += this.loss(y, t);
       let delta = new Float32Array(y.length);
-      for (let j = 0; j < y.length; j++) delta[j] = (y[j] - t[j]) / y.length; // sigmoid+BCE 与 线性+MSE 形式相同
+      for (let j = 0; j < y.length; j++) delta[j] = (y[j] - t[j]) / y.length; // same form for sigmoid+BCE and linear+MSE
       for (let l = L - 1; l >= 0; l--) {
         const a = acts[l], nin = this.sizes[l], nout = this.sizes[l + 1], W = this.W[l];
         const gW = this.gW[l], gb = this.gb[l];
@@ -148,6 +148,7 @@ class MLP {
 
 export class TrainModule {
   static title = "神经网络 · 实时训练";
+  static keepOnLang = true;   // 文字每帧重画，切换语言时不重建（保留训练进度）
 
   constructor({ body, tools, store }) {
     this.store = store;
@@ -361,7 +362,11 @@ export class TrainModule {
     // ---- 区域划分 ----
     const top = 78, chartH = Math.max(70, Math.min(140, H * 0.27));
     const netBottom = H - chartH - 14;
-    const left = 92, right = this.mode === "distill" ? 168 : 70;
+    // 输出层标签宽度随语言变化（英文类别名更长）
+    g.font = "11px ui-sans-serif, system-ui, sans-serif";
+    let labelW = 0;
+    if (this.mode === "distill") for (const k of GROUP_ORDER) labelW = Math.max(labelW, g.measureText(GROUPS[k]?.name || k).width);
+    const left = 92, right = this.mode === "distill" ? Math.max(168, labelW + 120) : 70;
     const x0 = left, x1 = W - right;
     const colX = (l) => x0 + ((x1 - x0) * l) / (L - 1);
     const nodeY = (l, i) => {
@@ -468,7 +473,7 @@ export class TrainModule {
         const tv = snd?.groups?.[grp] ?? null;
         g.fillStyle = GROUPS[grp]?.color || "#aaa";
         g.fillText(GROUPS[grp]?.name || grp, x, y);
-        const bx = x + 60, bw = right - 78;
+        const bx = x + labelW + 10, bw = right - labelW - 28;
         g.fillStyle = "rgba(255,255,255,.07)"; g.fillRect(bx, y - 4, bw, 8);
         g.fillStyle = GROUPS[grp]?.color || "#aaa"; g.globalAlpha = 0.85;
         g.fillRect(bx, y - 4, bw * yv, 8); g.globalAlpha = 1;
@@ -477,7 +482,9 @@ export class TrainModule {
         }
       }
       g.fillStyle = "#6f7ba6"; g.font = "10px ui-sans-serif, system-ui, sans-serif";
-      g.fillText("色条 学生预测 · 白线 AST 老师", x1 + 12, top - 12);
+      g.textAlign = "right";
+      g.fillText("色条 学生预测 · 白线 AST 老师", W - 10, top - 12);
+      g.textAlign = "left";
       g.font = "11px ui-sans-serif, system-ui, sans-serif";
     }
 

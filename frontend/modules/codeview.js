@@ -7,6 +7,7 @@
 import * as THREE from "three";
 import { ThreeModule } from "../core/three-base.js";
 import { makeSprite } from "../palette.js";
+import { lang, raw } from "../i18n.js";
 
 const PHASES = [
   { key: "features", no: "①", title: "features(f) · 特征提取",   color: "#5ad1c8", start: /^function features\(/ },
@@ -74,7 +75,7 @@ class CodeCard {
   }
 
   draw(active, cursor, info) {
-    const sig = `${active}|${cursor}|${info}`;
+    const sig = `${lang}|${active}|${cursor}|${info}`;
     if (sig === this.sig) return;
     this.sig = sig;
     const g = this.g, L = this.src?.lines || [], ph = this.ph;
@@ -104,6 +105,7 @@ class CodeCard {
     }
     g.font = FONT;
     const x0 = 86, maxW = CW - x0 - 24;
+    raw(() => {   // 源代码按原文显示，不翻译
     for (let r = 0; r < VIEW && this.top + r < L.length; r++) {
       const i = this.top + r, y = 108 + r * LH;
       const hit = active && i === cursor;
@@ -123,6 +125,7 @@ class CodeCard {
         g.fillText(t, x, y); x += w;
       }
     }
+    });
     // 滚动条
     if (L.length > VIEW) {
       const h = (CH - 120) * (VIEW / L.length), y = 96 + (CH - 120) * (this.top / L.length);
@@ -134,6 +137,7 @@ class CodeCard {
 
 export class CodeViewModule extends ThreeModule {
   static title = "训练代码 · 3D 执行视图";
+  static keepOnLang = true;
 
   constructor(ctx) {
     super({ body: ctx.body, pos: [0, 0.8, 14.5], target: [0, 0, 0], fov: 46, background: 0x05070f });
