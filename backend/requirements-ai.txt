@@ -1,0 +1,11 @@
+# NeuroSense 识别功能（可选）：语音字幕 / 声音分类 / 鸟种识别
+# 不安装也能正常使用其它所有功能；缺哪个包，界面上对应的识别会显示“未安装”。
+#
+# 建议在 Python 3.11 或 3.12 的虚拟环境中安装（部分机器学习包可能还没有 Python 3.14 的 Windows 版本）。
+# torch 请先单独安装 CPU 版：
+#   python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+faster-whisper     # 语音字幕（Whisper，99 种语言）
+transformers       # 声音分类（AudioSet AST 模型，527 类）
+birdnetlib         # 鸟种识别（BirdNET，6000+ 鸟种）
+tensorflow         # birdnetlib 在 Windows 上需要

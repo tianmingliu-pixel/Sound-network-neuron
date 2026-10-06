@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# 本地生成 / 下载的大文件（每台电脑自己下载）
+backend/models/
+backend/wheels/
+backend/wheels_report.json
+backend/ai_check.txt
+*.part
+
+# 媒体文件：上传的音视频与自动生成的 demo.wav（启动时自动生成）
+backend/media/
+*.graph.json
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NeuroSense · 声学感知工作台</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="brand">NeuroSense <span>v0.7</span></div>
+
+    <div class="seg" role="tablist" aria-label="输入源">
+      <button data-source="file" class="on">文件 / 视频</button>
+      <button data-source="live">直播</button>
+    </div>
+
+    <div class="group" id="src-file">
+      <select id="file" aria-label="媒体文件"></select>
+      <label class="btn ghost" title="也可以把文件直接拖到页面上">上传<input id="upload" type="file" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.opus,.wma,.aiff,.aif,.amr,.ape,.ac3,.mka,.mkv,.mov,.avi,.wmv,.flv,.3gp,.ts,.mpg" hidden /></label>
+      <button id="play" class="btn" disabled>▶ 播放</button>
+      <input id="seek" type="range" min="0" max="1" step="0.01" value="0" disabled aria-label="进度" />
+    </div>
+
+    <div class="group" id="src-live" hidden>
+      <label class="check"><input id="cam" type="checkbox" checked /> 摄像头</label>
+      <button id="live" class="btn">● 开始直播</button>
+    </div>
+
+    <span id="time" class="time">–</span>
+
+    <div class="group" id="pitch-ctl">
+      <label class="field">色带
+        <select id="palette">
+          <option value="classic6">6 色</option>
+          <option value="spectral12" selected>12 色光谱</option>
+          <option value="turbo">Turbo 连续</option>
+        </select>
+      </label>
+      <label class="field">音高范围
+        <select id="range">
+          <option value="100-10000" selected>全频 100–10k</option>
+          <option value="60-2000">人声 / 低音 60–2k</option>
+          <option value="1000-10000">鸟鸣 1k–10k</option>
+          <option value="auto">自适应（按数据）</option>
+          <option value="custom">自定义…</option>
+        </select>
+      </label>
+      <span id="custom-range" class="field" hidden>
+        <input id="fmin" type="number" min="20" max="19000" value="100" aria-label="最低频率"> –
+        <input id="fmax" type="number" min="40" max="20000" value="10000" aria-label="最高频率"> Hz
+      </span>
+    </div>
+
+    <div class="group right">
+      <label class="field">时间窗
+        <select id="window">
+          <option value="10">10 s</option><option value="20" selected>20 s</option>
+          <option value="40">40 s</option><option value="60">60 s</option>
+        </select>
+      </label>
+      <label class="field">视频
+        <select id="video-mode"><option value="pip">画中画</option><option value="off">隐藏</option></select>
+      </label>
+      <button id="clear" class="btn ghost">清空</button>
+      <button id="export" class="btn ghost">导出图</button>
+      <button id="cc" class="btn ghost on" title="显示 / 隐藏字幕">字幕</button>
+      <span id="ai" class="ai-chip" title="识别引擎状态">识别 …</span>
+      <span id="status" class="status">未连接</span>
+    </div>
+  </header>
+
+  <p id="msg" class="msg" hidden></p>
+
+  <main class="workspace" id="workspace"></main>
+
+  <video id="video" playsinline crossorigin="anonymous"></video>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

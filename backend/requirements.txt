@@ -1,0 +1,5 @@
+numpy>=1.26
+starlette>=0.40
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+imageio-ffmpeg>=0.5    # 自带 ffmpeg：用于转码 WMA / AIFF / AMR / AVI 等浏览器不支持的格式
