@@ -79,18 +79,38 @@ Double-click **`install-ai.bat`**. It creates a separate Python 3.12 environment
 
 On an unreliable network (SSL errors, very slow downloads) run this in PowerShell: `.\install-ai.bat -Mirror`
 
-### Manual install (any OS)
+### Manual install (any OS, recommended: the curl route)
+
+Both the packages and the models are downloaded with the system `curl`: downloads resume after interruptions, retry automatically, and are not affected by networks that interfere with Python's own encrypted connections (which makes plain `pip install` fail with `SSL: RECORD_LAYER_FAILURE` or stop halfway).
+
+```bash
+cd backend
+python install_ai_curl.py              # installs faster-whisper + torch + transformers (captions + sound classes)
+python download_models.py              # downloads the Whisper and AST models into backend/models/
+python server.py
+```
+
+In mainland China add `--mirror`: `python install_ai_curl.py --mirror` (Tsinghua PyPI mirror), `python download_models.py --mirror` (hf-mirror.com). If either script is interrupted, just run it again; finished parts are kept.
+
+How `install_ai_curl.py` works: pip first only resolves the dependencies to get each file's download URL (a small amount of metadata); curl then downloads **all package files in full** into `backend/wheels/`; finally pip installs from that local folder without going online.
+
+- Bird species (needs Python ≤ 3.12): `python install_ai_curl.py birdnetlib tensorflow librosa`
+- Install only what you need, e.g. `python install_ai_curl.py faster-whisper` gives captions only.
+
+<details>
+<summary>On a normal network you can also use plain pip</summary>
 
 ```bash
 cd backend
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 python -m pip install faster-whisper transformers          # captions + sound classes
 python -m pip install birdnetlib tensorflow librosa        # bird species (needs Python ≤ 3.12)
-python download_models.py                                   # downloads models into backend/models/
+python download_models.py
 python server.py
 ```
 
-- Install only what you need: with just `faster-whisper` you get captions only.
+</details>
+
 - Check your installation: `python check_ai.py` (the report is also saved to `backend/ai_check.txt`).
 - Turn recognition off completely: `python server.py --no-ai`
 - When the status at the top-right shows **字幕✓ 声音✓ 鸟种✓** (captions / sound / birds), everything is ready.

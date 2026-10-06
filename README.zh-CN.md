@@ -77,18 +77,38 @@ chmod +x start.sh
 
 网络不稳定时（SSL 报错、下载很慢），在 PowerShell 中运行：`.\install-ai.bat -Mirror`
 
-### 手动安装（任何系统）
+### 手动安装（任何系统，推荐 curl 稳定路线）
+
+包和模型都用系统自带的 `curl` 下载：可以断点续传、自动重试，不受部分网络对 Python 加密连接的干扰（这类干扰会让普通 `pip install` 报 `SSL: RECORD_LAYER_FAILURE` 或下载到一半中断）。
+
+```bash
+cd backend
+python install_ai_curl.py              # 安装 faster-whisper + torch + transformers（字幕 + 声音类别）
+python download_models.py              # 下载 Whisper 和 AST 模型到 backend/models/
+python server.py
+```
+
+国内网络加 `--mirror`：`python install_ai_curl.py --mirror`（清华 PyPI 镜像）、`python download_models.py --mirror`（hf-mirror.com）。两个脚本中断后都可以直接重新运行，已下载的部分会保留。
+
+`install_ai_curl.py` 的工作方式：先让 pip 只解析依赖、得到每个文件的下载网址（只下载很小的元数据）；再用 curl **完整下载**所有安装包到 `backend/wheels/`；最后让 pip 从本地文件夹安装，不再联网。
+
+- 鸟种识别（需要 Python ≤ 3.12）：`python install_ai_curl.py birdnetlib tensorflow librosa`
+- 只装需要的部分即可，例如 `python install_ai_curl.py faster-whisper` 就只有字幕。
+
+<details>
+<summary>网络正常时也可以直接用 pip</summary>
 
 ```bash
 cd backend
 python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 python -m pip install faster-whisper transformers          # 字幕 + 声音类别
 python -m pip install birdnetlib tensorflow librosa        # 鸟种（需要 Python ≤ 3.12）
-python download_models.py                                   # 下载模型到 backend/models/
+python download_models.py
 python server.py
 ```
 
-- 只装需要的部分即可：只装 `faster-whisper` 就只有字幕。
+</details>
+
 - 检查安装情况：`python check_ai.py`，结果同时保存在 `backend/ai_check.txt`。
 - 完全关闭识别：`python server.py --no-ai`
 - 工具栏右上角的状态显示 **字幕✓ 声音✓ 鸟种✓** 表示就绪。
