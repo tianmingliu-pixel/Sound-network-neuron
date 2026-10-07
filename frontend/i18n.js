@@ -1,4 +1,4 @@
-// 界面中英文切换。
+// 界面多语言切换：中文（原文）/ English / 日本語 / Français / Español。
 //
 // 做法：所有模块照常写中文，这里统一翻译显示出来的文字，模块代码不需要改：
 //   1. 页面文字（DOM）：MutationObserver 监视文字节点和 title / aria-label / placeholder，
@@ -7,35 +7,50 @@
 //   3. 翻译：先整句查词典，查不到再把句中的已知片段逐个替换（片段两侧不能紧挨汉字，避免改动文件名等用户内容）。
 // 带 translate="no" 的元素（文件列表、字幕原文）不翻译。
 // 切换语言后会触发 "langchange" 事件，main.js 据此重建各面板（3D 文字贴图需要重画）。
+// 词典：英文在 i18n-dict.js，日语 / 法语 / 西班牙语在 i18n-langs.js（缺的词条显示英文）。
 
 import { UI, LANGS, AUDIOSET } from "./i18n-dict.js";
+import { TRANSLATIONS } from "./i18n-langs.js";
 
 const STORE_KEY = "neurosense.lang";
 const CJK = /[一-鿿]/;
 
+/** 支持的界面语言（菜单里用各自的语言书写） */
+export const LANGUAGES = { zh: "中文", en: "English", ja: "日本語", fr: "Français", es: "Español" };
+
 function initialLang() {
   try {
     const v = localStorage.getItem(STORE_KEY);
-    if (v === "zh" || v === "en") return v;
+    if (v in LANGUAGES) return v;
   } catch { /* 浏览器禁用存储时忽略 */ }
-  return (navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
+  for (const l of navigator.languages || [navigator.language || ""]) {
+    const code = l.toLowerCase().slice(0, 2);
+    if (code in LANGUAGES) return code;
+  }
+  return "en";
 }
 
 export let lang = initialLang();
 
-// ---------------- 词典与片段替换 ----------------
-const DICT = { ...AUDIOSET };
-try {
-  const dn = new Intl.DisplayNames(["en"], { type: "language" });
-  for (const [zh, code] of Object.entries(LANGS)) DICT[zh] = dn.of(code) || code;
-} catch {
-  for (const [zh, code] of Object.entries(LANGS)) DICT[zh] = code.toUpperCase();
-}
-Object.assign(DICT, UI);   // 界面词条优先
-
+// ---------------- 词典与片段替换（每种语言第一次用到时建一次） ----------------
 const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const KEYS = Object.keys(DICT).sort((a, b) => b.length - a.length);
-const FRAG = new RegExp(`(?<![\\u4e00-\\u9fff])(?:${KEYS.map(escRe).join("|")})(?![\\u4e00-\\u9fff])`, "g");
+const built = {};
+
+function build(l) {
+  const DICT = { ...AUDIOSET };
+  try {
+    const dn = new Intl.DisplayNames([l], { type: "language" });
+    for (const [zh, code] of Object.entries(LANGS)) DICT[zh] = dn.of(code) || code;
+  } catch {
+    for (const [zh, code] of Object.entries(LANGS)) DICT[zh] = code.toUpperCase();
+  }
+  Object.assign(DICT, UI);                                   // 英文界面词条
+  if (TRANSLATIONS[l]) Object.assign(DICT, TRANSLATIONS[l]); // 目标语言覆盖；缺的词条显示英文
+  const keys = Object.keys(DICT).sort((a, b) => b.length - a.length);
+  const frag = new RegExp(`(?<![\\u4e00-\\u9fff])(?:${keys.map(escRe).join("|")})(?![\\u4e00-\\u9fff])`, "g");
+  return (built[l] = { DICT, frag, latin: l !== "ja" });
+}
+
 const PUNCT = [[/（/g, " ("], [/）/g, ")"], [/：/g, ": "], [/，/g, ", "], [/。/g, ". "], [/、/g, ", "],
                [/；/g, "; "], [/“|”/g, '"'], [/——/g, " — "], [/「/g, "“"], [/」/g, "”"]];
 
@@ -47,13 +62,15 @@ export function tr(s) {
   if (lang === "zh" || bypass || typeof s !== "string" || !CJK.test(s)) return s;
   let r = cache.get(s);
   if (r !== undefined) return r;
+  const { DICT, frag, latin } = built[lang] || build(lang);
   const [, lead, core, tail] = s.match(/^(\s*)([\s\S]*?)(\s*)$/);   // 保留首尾空白
   r = DICT[core];
   if (r === undefined) {
-    r = core.replace(FRAG, (m) => DICT[m]);
-    if (!CJK.test(r)) {                         // 整句都译完了：全角标点换成英文标点
+    r = core.replace(frag, (m) => DICT[m]);
+    if (latin && !CJK.test(r)) {                // 拉丁字母语言整句译完：全角标点换成半角
       for (const [re, to] of PUNCT) r = r.replace(re, to);
-      r = r.replace(/ {2,}/g, " ").replace(/\( /g, "(").replace(/ \)/g, ")").replace(/ ([,.:;])/g, "$1").trim();
+      r = r.replace(/ {2,}/g, " ").replace(/\( /g, "(").replace(/ \)/g, ")").trim();
+      if (lang !== "fr") r = r.replace(/ ([,.:;])/g, "$1");   // 法语在冒号、分号前保留空格
     }
   }
   r = lead + r + tail;
@@ -119,7 +136,7 @@ function walk(root) {
 
 let titleZh = document.title;
 function applyAll() {
-  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
   document.title = tr(titleZh);
   walk(document.body);
 }
@@ -133,7 +150,7 @@ new MutationObserver((list) => {
 }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
 
 export function setLang(l) {
-  if (l === lang || (l !== "zh" && l !== "en")) return;
+  if (l === lang || !(l in LANGUAGES)) return;
   lang = l;
   cache = new Map();
   try { localStorage.setItem(STORE_KEY, l); } catch { /* 忽略 */ }

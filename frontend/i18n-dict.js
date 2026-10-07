@@ -411,7 +411,7 @@ export const AUDIOSET = {
  "蛇": "Snake",
  "鼠类": "Rodents",
  "鲸鸣": "Whale vocalization",
- "大型猫科吼叫": "Roaring cats (lions",
+ "大型猫科吼叫": "Big cats",
  "吼叫": "Roar",
  "风": "Wind",
  "树叶沙沙": "Rustling leaves",

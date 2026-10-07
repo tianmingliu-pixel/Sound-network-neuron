@@ -9,6 +9,7 @@
 //      青色脉冲 = 前向传播，品红脉冲 = 反向传播（梯度），下方为损失 / 准确率曲线。
 
 import { GROUPS, GROUP_ORDER } from "../palette.js";
+import { tr, raw } from "../i18n.js";
 
 const N_IN = 31;
 const IN_LABELS = [
@@ -335,7 +336,14 @@ export class TrainModule {
     const info = this.mode === "distill"
       ? "学生网络只看 31 个声学特征，学习模仿 AST 大模型的 9 大类判断"
       : "把 31 个特征压缩到中间 3 个神经元，再还原（学习声音的低维结构）";
-    g.fillText(info, 12, 48);
+    {   // 说明文字过长（例如法语）时截断加省略号
+      let t = tr(info);
+      if (g.measureText(t).width > W - 24) {
+        while (t.length > 4 && g.measureText(t + "…").width > W - 24) t = t.slice(0, -1);
+        t += "…";
+      }
+      raw(() => g.fillText(t, 12, 48));
+    }
 
     const epoch = this.train.length ? (this.steps * 24) / this.train.length : 0;
     const stats = [
@@ -483,7 +491,7 @@ export class TrainModule {
       }
       g.fillStyle = "#6f7ba6"; g.font = "10px ui-sans-serif, system-ui, sans-serif";
       g.textAlign = "right";
-      g.fillText("色条 学生预测 · 白线 AST 老师", W - 10, top - 12);
+      g.fillText("色条 学生预测 · 白线 AST 老师", W - 10, nodeY(L - 1, 0) - 16);
       g.textAlign = "left";
       g.font = "11px ui-sans-serif, system-ui, sans-serif";
     }

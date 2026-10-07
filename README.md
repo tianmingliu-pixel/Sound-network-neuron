@@ -23,7 +23,7 @@ Current version: **v0.7**
 
 The drop-down at the top-left of every panel switches it to another module. On narrow screens (phones) the panels stack vertically.
 
-> **Language:** the **EN / 中文** button in the toolbar switches the whole interface between English and Chinese. The choice is remembered; the first visit follows your browser language. Chinese labels are kept in parentheses below for reference.
+> **Language:** the language menu in the toolbar switches the whole interface between **中文, English, 日本語, Français and Español**. The choice is remembered; the first visit follows your browser language. Chinese labels are kept in parentheses below for reference.
 
 ---
 

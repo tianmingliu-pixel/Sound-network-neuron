@@ -2,7 +2,7 @@
 //   输入源（文件 / 视频 / 直播）→ WebSocket → 共享仓库 store → 各面板模块
 //   布局与模块在 layout.js 中配置
 
-import { lang, setLang } from "./i18n.js";   // 必须最先导入：之后创建的文字都会被翻译
+import { lang, setLang, LANGUAGES } from "./i18n.js";   // 必须最先导入：之后创建的文字都会被翻译
 import { InputManager } from "./audio-io.js";
 import { store } from "./core/store.js";
 import { Panel } from "./core/panel.js";
@@ -26,13 +26,13 @@ const hooks = {
 };
 const panels = LAYOUT.map((cfg) => new Panel(ui.workspace, cfg, REGISTRY, { store, hooks }));
 
-// 中英文切换：重建面板以重画 3D 文字贴图（训练类模块每帧重画文字，保留其训练状态）
-const langBtn = $("lang");
-const langLabel = () => { langBtn.textContent = lang === "zh" ? "EN" : "中文"; };
-langLabel();
-langBtn.onclick = () => setLang(lang === "zh" ? "en" : "zh");
+// 界面语言：切换后重建面板以重画 3D 文字贴图（训练类模块每帧重画文字，保留其训练状态）
+const langSel = $("lang");
+langSel.innerHTML = Object.entries(LANGUAGES).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
+langSel.value = lang;
+langSel.onchange = () => setLang(langSel.value);
 window.addEventListener("langchange", () => {
-  langLabel();
+  langSel.value = lang;
   for (const p of panels) if (!REGISTRY[p.key].keepOnLang) p.use(p.key);
 });
 const broadcast = (method, ...args) => panels.forEach((p) => p.call(method, ...args));
