@@ -4,7 +4,7 @@
 
 import { lang, setLang, LANGUAGES } from "./i18n.js";   // 必须最先导入：之后创建的文字都会被翻译
 import { InputManager } from "./audio-io.js";
-import { resolveBackend, hasBackend, api, wsUrl, mountBackendPanel } from "./backend.js";
+import { resolveBackend, hasBackend, backendSource, api, wsUrl, mountBackendPanel } from "./backend.js";
 import { store } from "./core/store.js";
 import { Panel } from "./core/panel.js";
 import { LAYOUT, REGISTRY } from "./layout.js";
@@ -376,5 +376,5 @@ if (hasBackend()) {
   connect();
   refreshFiles().catch(() => showMsg("无法读取后端的文件列表，请检查后端是否在运行。"));
 } else {
-  ui.status.textContent = "未连接后端";
+  ui.status.textContent = backendSource() === "outdated" ? "后端需要重启" : "未连接后端";
 }

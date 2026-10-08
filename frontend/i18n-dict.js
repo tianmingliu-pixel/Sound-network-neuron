@@ -345,8 +345,10 @@ export const UI = {
   "Chrome / Edge 可能询问「是否允许访问本地网络上的设备」，请点「允许」。Safari 不允许网页连接本机后端，请改用 Chrome / Edge / Firefox，或直接打开": "Chrome / Edge may ask whether to allow access to devices on your local network — click “Allow”. Safari does not let web pages reach a local backend; use Chrome / Edge / Firefox, or open",
   "未连接后端": "No backend connected",
   "点击设置后端地址": "Click to set the backend URL",
-  "无法读取后端的文件列表，请检查后端是否在运行。": "Could not read the file list from the backend. Check that the backend is running."
-
+  "无法读取后端的文件列表，请检查后端是否在运行。": "Could not read the file list from the backend. Check that the backend is running.",
+  "本机后端是旧版本": "Local backend is outdated",
+  "后端需要重启": "Backend needs restart",
+  "你电脑上的 NeuroSense 后端正在运行，但它是更新前启动的旧版本，不允许在线网页连接。请关闭黑色的 start.bat 窗口，重新双击 start.bat，然后刷新本页。": "The NeuroSense backend on your computer is running, but it is an older version started before the update and does not allow the online page to connect. Close the black start.bat window, double-click start.bat again, then reload this page."
 };
 
 // 识别语言代码（后端 labels_zh.LANG_NAMES 的中文名 → 语言代码），英文名由浏览器的 Intl.DisplayNames 生成

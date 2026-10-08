@@ -255,3 +255,4 @@ body.dropping::after { content: "松开即可上传音频 / 视频"; position: f
 .bp-help a { color: #7cc4ff; }
 .bp-note { color: var(--muted); font-size: 12px; }
 .backend-pop code { background: #0b0e13; padding: 1px 4px; border-radius: 4px; }
+.bp-warn { background: rgba(255,180,60,.12); border: 1px solid rgba(255,180,60,.45); color: #ffd18a; padding: 8px 10px; border-radius: 6px; margin: 8px 0; }

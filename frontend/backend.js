@@ -43,11 +43,21 @@ export async function resolveBackend() {
   if (location.origin !== LOCAL && await probe(LOCAL)) { base = LOCAL; source = "local"; return; }
   base = SITE_DEFAULT;
   source = SITE_DEFAULT ? "remote" : "none";
+  // 本机有后端在运行、但不允许本网页连接 = 旧版本后端（启动于更新之前）
+  if (source === "none" && location.origin !== LOCAL && await reachable(LOCAL)) source = "outdated";
+}
+
+/** 只判断端口上有没有服务在响应（不读取内容，所以不受跨域限制） */
+async function reachable(b) {
+  const c = new AbortController();
+  const t = setTimeout(() => c.abort(), 1500);
+  try { await fetch(`${b}/api/files`, { mode: "no-cors", signal: c.signal, cache: "no-store" }); return true; }
+  catch { return false; } finally { clearTimeout(t); }
 }
 
 export const apiBase = () => base;
 export const backendSource = () => source;
-export const hasBackend = () => source !== "none";
+export const hasBackend = () => source !== "none" && source !== "outdated";
 /** 后端上的路径 → 完整地址 */
 export const api = (path) => base + path;
 export function wsUrl() {
@@ -72,6 +82,7 @@ export function mountBackendPanel(trigger) {
     local: "你自己电脑上的后端",
     remote: "网站默认后端",
     none: "没有找到后端",
+    outdated: "本机后端是旧版本",
   })[source];
 
   function render() {
@@ -86,6 +97,7 @@ export function mountBackendPanel(trigger) {
         <button class="btn ghost bp-auto" type="button">自动选择</button>
         <button class="btn bp-save" type="button">保存并重新连接</button>
       </div>
+      ${source === "outdated" ? `<p class="bp-warn">你电脑上的 NeuroSense 后端正在运行，但它是更新前启动的旧版本，不允许在线网页连接。请关闭黑色的 start.bat 窗口，重新双击 start.bat，然后刷新本页。</p>` : ""}
       <div class="bp-help">
         <p>这个网页只是界面；声音分析、字幕和识别都在你自己电脑上的 NeuroSense 后端里运行，音频和文件不会上传到网上。</p>
         <ol>
@@ -105,5 +117,5 @@ export function mountBackendPanel(trigger) {
   trigger.style.cursor = "pointer";
   trigger.title = "点击设置后端地址";
   trigger.onclick = () => { render(); pop.hidden = !pop.hidden; };
-  if (source === "none") { render(); pop.hidden = false; }   // 没有后端：直接告诉用户怎么启动
+  if (source === "none" || source === "outdated") { render(); pop.hidden = false; }   // 没有后端：直接告诉用户怎么启动
 }

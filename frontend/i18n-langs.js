@@ -453,7 +453,10 @@ export const TRANSLATIONS = {
   "Chrome / Edge 可能询问「是否允许访问本地网络上的设备」，请点「允许」。Safari 不允许网页连接本机后端，请改用 Chrome / Edge / Firefox，或直接打开": "Chrome / Edge が「ローカルネットワーク上のデバイスへのアクセスを許可しますか」と尋ねることがあります。「許可」を押してください。Safari はローカルバックエンドへの接続を許可しないため、Chrome / Edge / Firefox を使うか、次を直接開いてください:",
   "未连接后端": "バックエンド未接続",
   "点击设置后端地址": "クリックしてバックエンドのアドレスを設定",
-  "无法读取后端的文件列表，请检查后端是否在运行。": "バックエンドからファイル一覧を読み込めません。バックエンドが起動しているか確認してください。"
+  "无法读取后端的文件列表，请检查后端是否在运行。": "バックエンドからファイル一覧を読み込めません。バックエンドが起動しているか確認してください。",
+  "本机后端是旧版本": "ローカルバックエンドが古いバージョンです",
+  "后端需要重启": "バックエンドの再起動が必要",
+  "你电脑上的 NeuroSense 后端正在运行，但它是更新前启动的旧版本，不允许在线网页连接。请关闭黑色的 start.bat 窗口，重新双击 start.bat，然后刷新本页。": "パソコンの NeuroSense バックエンドは動いていますが、更新前に起動した古いバージョンのため、オンラインページから接続できません。黒い start.bat ウィンドウを閉じ、start.bat をもう一度ダブルクリックしてから、このページを再読み込みしてください。"
  },
  "fr": {
   "NeuroSense · 声学感知工作台": "NeuroSense · Atelier de perception acoustique",
@@ -906,7 +909,10 @@ export const TRANSLATIONS = {
   "Chrome / Edge 可能询问「是否允许访问本地网络上的设备」，请点「允许」。Safari 不允许网页连接本机后端，请改用 Chrome / Edge / Firefox，或直接打开": "Chrome / Edge peut demander s'il faut autoriser l'accès aux appareils du réseau local : cliquez sur « Autoriser ». Safari n'autorise pas les pages web à joindre un backend local ; utilisez Chrome / Edge / Firefox, ou ouvrez directement",
   "未连接后端": "Aucun backend connecté",
   "点击设置后端地址": "Cliquez pour définir l'adresse du backend",
-  "无法读取后端的文件列表，请检查后端是否在运行。": "Impossible de lire la liste des fichiers du backend. Vérifiez que le backend est en cours d'exécution."
+  "无法读取后端的文件列表，请检查后端是否在运行。": "Impossible de lire la liste des fichiers du backend. Vérifiez que le backend est en cours d'exécution.",
+  "本机后端是旧版本": "Le backend local est obsolète",
+  "后端需要重启": "Redémarrage du backend requis",
+  "你电脑上的 NeuroSense 后端正在运行，但它是更新前启动的旧版本，不允许在线网页连接。请关闭黑色的 start.bat 窗口，重新双击 start.bat，然后刷新本页。": "Le backend NeuroSense de votre ordinateur tourne, mais c'est une ancienne version lancée avant la mise à jour, qui n'autorise pas la page en ligne à se connecter. Fermez la fenêtre noire start.bat, double-cliquez à nouveau sur start.bat, puis rechargez cette page."
  },
  "es": {
   "NeuroSense · 声学感知工作台": "NeuroSense · Banco de percepción acústica",
@@ -1359,6 +1365,9 @@ export const TRANSLATIONS = {
   "Chrome / Edge 可能询问「是否允许访问本地网络上的设备」，请点「允许」。Safari 不允许网页连接本机后端，请改用 Chrome / Edge / Firefox，或直接打开": "Chrome / Edge puede preguntar si permites el acceso a dispositivos de tu red local: pulsa «Permitir». Safari no deja que las páginas web se conecten a un backend local; usa Chrome / Edge / Firefox o abre directamente",
   "未连接后端": "Sin backend conectado",
   "点击设置后端地址": "Haz clic para configurar la dirección del backend",
-  "无法读取后端的文件列表，请检查后端是否在运行。": "No se pudo leer la lista de archivos del backend. Comprueba que el backend esté en ejecución."
+  "无法读取后端的文件列表，请检查后端是否在运行。": "No se pudo leer la lista de archivos del backend. Comprueba que el backend esté en ejecución.",
+  "本机后端是旧版本": "El backend local está desactualizado",
+  "后端需要重启": "Hay que reiniciar el backend",
+  "你电脑上的 NeuroSense 后端正在运行，但它是更新前启动的旧版本，不允许在线网页连接。请关闭黑色的 start.bat 窗口，重新双击 start.bat，然后刷新本页。": "El backend de NeuroSense de tu ordenador está en marcha, pero es una versión antigua iniciada antes de la actualización y no permite que la página en línea se conecte. Cierra la ventana negra de start.bat, vuelve a hacer doble clic en start.bat y recarga esta página."
  }
 };
