@@ -4,6 +4,7 @@
 
 import { lang, setLang, LANGUAGES } from "./i18n.js";   // 必须最先导入：之后创建的文字都会被翻译
 import { InputManager } from "./audio-io.js";
+import { resolveBackend, hasBackend, api, wsUrl, mountBackendPanel } from "./backend.js";
 import { store } from "./core/store.js";
 import { Panel } from "./core/panel.js";
 import { LAYOUT, REGISTRY } from "./layout.js";
@@ -46,8 +47,7 @@ document.getElementById("panel-top").appendChild(ui.video);
 let ws = null, lastStart = null, dropped = 0;
 
 function connect() {
-  const proto = location.protocol === "https:" ? "wss" : "ws";
-  ws = new WebSocket(`${proto}://${location.host}/ws`);
+  ws = new WebSocket(wsUrl());   // 后端地址由 backend.js 决定（本机 / 本页面 / 手动设置）
   ws.binaryType = "arraybuffer";
   ws.onopen = () => {
     ui.status.textContent = "已连接";
@@ -127,7 +127,7 @@ function clearAll() {
 }
 
 async function refreshFiles(select) {
-  const { files } = await (await fetch("/api/files")).json();
+  const { files } = await (await fetch(api("/api/files"))).json();
   ui.file.innerHTML = files.map((f) => `<option>${f.replace(/</g, "&lt;")}</option>`).join("");
   const pick = select ?? files[0];
   if (pick) { ui.file.value = pick; await loadFile(pick); }
@@ -138,7 +138,7 @@ async function loadFile(name) {
   clearAll();
   ui.play.textContent = "▶ 播放";
   ui.play.disabled = ui.seek.disabled = true;
-  await io.useFile(`/media/${encodeURIComponent(name)}`, name);
+  await io.useFile(api(`/media/${encodeURIComponent(name)}`), name);
 }
 
 ui.video.addEventListener("loadedmetadata", () => {
@@ -165,7 +165,7 @@ function uploadFile(f) {
     const fd = new FormData();
     fd.append("file", f);
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/upload");
+    xhr.open("POST", api("/api/upload"));
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) ui.status.textContent = `上传中 ${Math.round((e.loaded / e.total) * 100)}%`;
     };
@@ -208,7 +208,7 @@ io.onDecodeError = async (name) => {
   if (tried.has(name)) { showMsg(`「${name}」转码后仍无法播放，文件可能已损坏。`); return; }
   tried.add(name);
   showMsg(`浏览器无法解码「${name}」，正在自动转码…`);
-  const res = await (await fetch("/api/convert", { method: "POST", headers: { "Content-Type": "application/json" },
+  const res = await (await fetch(api("/api/convert"), { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ file: name }) })).json();
   if (res.error) { showMsg(`「${name}」无法解码，自动转码也失败：${res.error}`); return; }
   await refreshFiles(res.file);
@@ -368,6 +368,13 @@ function animate(now) {
 
 document.body.dataset.hasvideo = "0";
 document.body.dataset.video = "pip";
-connect();
-refreshFiles();
 requestAnimationFrame(animate);
+// 先找到后端（本机 / 本页面 / 手动设置），再连接；没有后端时打开「后端」面板说明如何启动
+await resolveBackend();
+mountBackendPanel(ui.status);
+if (hasBackend()) {
+  connect();
+  refreshFiles().catch(() => showMsg("无法读取后端的文件列表，请检查后端是否在运行。"));
+} else {
+  ui.status.textContent = "未连接后端";
+}

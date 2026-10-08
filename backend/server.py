@@ -36,6 +36,7 @@ import asyncio
 import contextlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -70,6 +71,70 @@ def _media_path(name: str) -> Path | None:
     if p.parent != MEDIA_DIR.resolve() or not p.is_file() or p.suffix.lower() not in SUPPORTED:
         return None
     return p
+
+
+# ----------------------------------------------------------------------------
+# 跨域：允许在线版网页（Vercel）连接这台电脑上的后端
+#   默认只允许本机页面和 sound-network-neuron*.vercel.app；其它网站不能读取你的媒体文件。
+#   需要别的地址时设置环境变量 NEUROSENSE_ALLOWED_ORIGINS（逗号分隔，"*" = 全部允许）。
+# ----------------------------------------------------------------------------
+_DEFAULT_ORIGINS = r"^(https?://(127\.0\.0\.1|localhost)(:\d+)?|https://sound-network-neuron(-[a-z0-9-]+)?\.vercel\.app)$"
+_EXTRA_ORIGINS = [o.strip().rstrip("/") for o in os.environ.get("NEUROSENSE_ALLOWED_ORIGINS", "").split(",") if o.strip()]
+
+
+def origin_allowed(origin: str | None) -> bool:
+    if not origin:
+        return True  # 同源请求、命令行工具没有 Origin
+    origin = origin.rstrip("/")
+    return "*" in _EXTRA_ORIGINS or origin in _EXTRA_ORIGINS or re.match(_DEFAULT_ORIGINS, origin) is not None
+
+
+class CorsMiddleware:
+    """CORS + Chrome 的私有网络访问（Private Network Access）预检；WebSocket 也检查来源。"""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] not in ("http", "websocket"):
+            return await self.app(scope, receive, send)
+        headers = {k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])}
+        origin = headers.get("origin")
+        ok = origin_allowed(origin)
+
+        if scope["type"] == "websocket":
+            if not ok:
+                return await send({"type": "websocket.close", "code": 4403})
+            return await self.app(scope, receive, send)
+
+        cors = []
+        if origin and ok:
+            cors = [(b"access-control-allow-origin", origin.encode("latin-1")), (b"vary", b"Origin"),
+                    (b"access-control-expose-headers", b"Content-Length, Content-Range, Accept-Ranges")]
+
+        if scope["method"] == "OPTIONS" and "access-control-request-method" in headers:
+            if not ok:
+                await send({"type": "http.response.start", "status": 403, "headers": []})
+                return await send({"type": "http.response.body", "body": b""})
+            extra = [(b"access-control-allow-methods", b"GET, POST, OPTIONS"),
+                     (b"access-control-allow-headers", headers.get("access-control-request-headers", "*").encode("latin-1")),
+                     (b"access-control-max-age", b"600")]
+            if headers.get("access-control-request-private-network") == "true":
+                extra.append((b"access-control-allow-private-network", b"true"))
+            await send({"type": "http.response.start", "status": 204, "headers": cors + extra})
+            return await send({"type": "http.response.body", "body": b""})
+
+        if not ok and scope["method"] not in ("GET", "HEAD"):
+            # 其它网站不能往这台电脑的后端上传 / 转码（表单 POST 不经过预检，所以这里直接拒绝）
+            await send({"type": "http.response.start", "status": 403, "headers": []})
+            return await send({"type": "http.response.body", "body": b""})
+
+        async def send_with_cors(msg):
+            if msg["type"] == "http.response.start" and cors:
+                msg = {**msg, "headers": list(msg.get("headers", [])) + cors}
+            await send(msg)
+
+        await self.app(scope, receive, send_with_cors)
 
 
 # ----------------------------------------------------------------------------
@@ -238,7 +303,9 @@ async def lifespan(app):
     yield
 
 
-app = Starlette(lifespan=lifespan, routes=[
+from starlette.middleware import Middleware
+
+app = Starlette(lifespan=lifespan, middleware=[Middleware(CorsMiddleware)], routes=[
     Route("/api/files", list_files),
     Route("/api/upload", upload, methods=["POST"]),
     Route("/api/convert", convert_file, methods=["POST"]),
@@ -249,6 +316,7 @@ app = Starlette(lifespan=lifespan, routes=[
 
 if __name__ == "__main__":
     print("NeuroSense v0.7 已启动 → http://127.0.0.1:8000（按 Ctrl+C 退出）")
+    print("在线版网页 https://sound-network-neuron.vercel.app 也会自动连接到这里。")
     if AI_ENABLED:
         print("识别功能：后台加载模型中（首次运行会自动下载模型）。用 --no-ai 可关闭。")
     uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")

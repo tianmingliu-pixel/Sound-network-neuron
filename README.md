@@ -27,6 +27,16 @@ The drop-down at the top-left of every panel switches it to another module. On n
 
 ---
 
+## Online version
+
+**<https://sound-network-neuron.vercel.app>** — the same interface, hosted online. It is only the page: it automatically connects to the NeuroSense backend running **on your own computer** (`http://127.0.0.1:8000`), so analysis, captions and recognition still happen locally and your audio is never uploaded.
+
+1. Start the backend as described in [Quick start](#quick-start) (`start.bat` / `./start.sh`).
+2. Open the online page. The status at the top right shows "Connected"; click it to see or change which backend is used.
+3. If no backend is running, the page opens a short guide explaining how to start one.
+
+Use Chrome, Edge or Firefox (Safari does not let web pages reach a local backend). Chrome / Edge may ask whether to allow access to devices on your local network — click "Allow". Details and troubleshooting: [DEPLOY.md](DEPLOY.md).
+
 ## Quick start
 
 ### Requirements

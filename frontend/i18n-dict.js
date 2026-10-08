@@ -324,6 +324,29 @@ export const UI = {
   "转码失败：": "Conversion failed: ",
   "需要 ffmpeg 才能转码这种格式：python -m pip install imageio-ffmpeg（或安装系统 ffmpeg）":
     "ffmpeg is needed to convert this format: python -m pip install imageio-ffmpeg (or install system ffmpeg)",
+  // ---------- 后端连接（在线版网页） ----------
+  "后端连接": "Backend connection",
+  "当前：": "Current:",
+  "手动设置的后端": "Manually set backend",
+  "本页面（本机后端）": "This page (local backend)",
+  "你自己电脑上的后端": "The backend on your own computer",
+  "网站默认后端": "Site default backend",
+  "没有找到后端": "No backend found",
+  "后端地址": "Backend URL",
+  "留空 = 与本页面同一个地址": "Empty = same address as this page",
+  "本机": "Local",
+  "自动选择": "Auto-select",
+  "保存并重新连接": "Save & reconnect",
+  "这个网页只是界面；声音分析、字幕和识别都在你自己电脑上的 NeuroSense 后端里运行，音频和文件不会上传到网上。": "This page is only the interface; sound analysis, captions and recognition run in the NeuroSense backend on your own computer, and your audio and files are never uploaded to the internet.",
+  "下载代码：": "Download the code:",
+  "Windows 双击": "Windows: double-click",
+  "；macOS / Linux 运行": "; macOS / Linux: run",
+  "回到本页刷新：网页会自动连接": "Reload this page: it connects automatically to",
+  "Chrome / Edge 可能询问「是否允许访问本地网络上的设备」，请点「允许」。Safari 不允许网页连接本机后端，请改用 Chrome / Edge / Firefox，或直接打开": "Chrome / Edge may ask whether to allow access to devices on your local network — click “Allow”. Safari does not let web pages reach a local backend; use Chrome / Edge / Firefox, or open",
+  "未连接后端": "No backend connected",
+  "点击设置后端地址": "Click to set the backend URL",
+  "无法读取后端的文件列表，请检查后端是否在运行。": "Could not read the file list from the backend. Check that the backend is running."
+
 };
 
 // 识别语言代码（后端 labels_zh.LANG_NAMES 的中文名 → 语言代码），英文名由浏览器的 Intl.DisplayNames 生成

@@ -237,3 +237,21 @@ body.dropping::after { content: "松开即可上传音频 / 视频"; position: f
 .mh-marks { grid-column: 2; display: flex; justify-content: space-between; }
 .mh-marks em { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; color: #c9d3f5; }
 .mh-note-hint { position: absolute; right: 14px; bottom: 10px; }
+
+/* 「后端」面板 / backend panel */
+.status { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; }
+.backend-pop { position: fixed; top: 52px; right: 12px; z-index: 50; width: min(440px, calc(100vw - 24px));
+  background: #11151c; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45); font-size: 13px; line-height: 1.5; }
+.backend-pop[hidden] { display: none; }
+.bp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.bp-now { color: var(--muted); margin: 0 0 8px; }
+.bp-field { display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
+.bp-url { width: 100%; box-sizing: border-box; padding: 6px 8px; background: #0b0e13; color: inherit;
+  border: 1px solid var(--line); border-radius: 6px; font-family: ui-monospace, monospace; }
+.bp-quick { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.bp-help { border-top: 1px solid var(--line); padding-top: 8px; }
+.bp-help ol { margin: 6px 0; padding-left: 20px; }
+.bp-help a { color: #7cc4ff; }
+.bp-note { color: var(--muted); font-size: 12px; }
+.backend-pop code { background: #0b0e13; padding: 1px 4px; border-radius: 4px; }
