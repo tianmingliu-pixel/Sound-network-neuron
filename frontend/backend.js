@@ -79,7 +79,7 @@ export function mountBackendPanel(trigger) {
       <div class="bp-head"><b>后端连接</b><button class="btn ghost bp-x" type="button">✕</button></div>
       <p class="bp-now"><span>当前：</span> <span>${esc(where())}</span>${base ? ` <code translate="no">${esc(base)}</code>` : ""}</p>
       <label class="bp-field">后端地址
-        <input class="bp-url" translate="no" value="${esc(base)}" placeholder="留空 = 与本页面同一个地址" />
+        <input class="bp-url" value="${esc(base)}" placeholder="留空 = 与本页面同一个地址" />
       </label>
       <div class="bp-quick">
         <button class="btn ghost bp-local" type="button">本机 ${LOCAL}</button>
@@ -89,7 +89,7 @@ export function mountBackendPanel(trigger) {
       <div class="bp-help">
         <p>这个网页只是界面；声音分析、字幕和识别都在你自己电脑上的 NeuroSense 后端里运行，音频和文件不会上传到网上。</p>
         <ol>
-          <li>下载代码：<a href="${REPO}" target="_blank" rel="noreferrer">GitHub · Sound-network-neuron</a></li>
+          <li>下载代码： <a href="${REPO}" target="_blank" rel="noreferrer">GitHub · Sound-network-neuron</a></li>
           <li>Windows 双击 <code>start.bat</code>；macOS / Linux 运行 <code>./start.sh</code></li>
           <li>回到本页刷新：网页会自动连接 <code translate="no">${LOCAL}</code></li>
         </ol>
