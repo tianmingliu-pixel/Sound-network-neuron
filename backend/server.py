@@ -314,9 +314,33 @@ app = Starlette(lifespan=lifespan, middleware=[Middleware(CorsMiddleware)], rout
     Mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend"),
 ])
 
+def pick_port(host: str = "127.0.0.1") -> int:
+    """8000 被其它程序（或之前打开的 NeuroSense）占用时，自动改用 8001…8010，不去关掉别人。
+    设置环境变量 NEUROSENSE_PORT 可以指定端口。"""
+    import socket
+    fixed = os.environ.get("NEUROSENSE_PORT")
+    candidates = [int(fixed)] if fixed else list(range(8000, 8011))
+    for port in candidates:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind((host, port))
+                return port
+            except OSError:
+                continue
+    raise SystemExit(f"端口 {candidates[0]}–{candidates[-1]} 都被占用了；用 NEUROSENSE_PORT=端口号 指定一个空闲端口。")
+
+
 if __name__ == "__main__":
-    print("NeuroSense v0.7 已启动 → http://127.0.0.1:8000（按 Ctrl+C 退出）")
-    print("在线版网页 https://sound-network-neuron.vercel.app 也会自动连接到这里。")
+    port = pick_port()
+    url = f"http://127.0.0.1:{port}"
+    if port != 8000:
+        print(f"端口 8000 已被占用（可能是别的程序或之前打开的 NeuroSense），改用 {port}。")
+    print(f"NeuroSense v0.7 已启动 → {url}（按 Ctrl+C 退出）")
+    print("在线版网页 https://sound-network-neuron.vercel.app 也会自动找到这里（8000–8010 端口）。")
     if AI_ENABLED:
         print("识别功能：后台加载模型中（首次运行会自动下载模型）。用 --no-ai 可关闭。")
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="warning")
+    if "--open" in sys.argv:
+        import threading
+        import webbrowser
+        threading.Timer(1.5, lambda: webbrowser.open(url)).start()
+    uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")

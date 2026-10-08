@@ -55,4 +55,4 @@ $env:NEUROSENSE_ALLOWED_ORIGINS = "https://你的域名"
 | Safari 连不上 | 改用 Chrome / Edge / Firefox，或直接打开 `http://127.0.0.1:8000` |
 | 文件列表正常但「断开，重连中…」 | 确认安装了 `uvicorn[standard]`（`pip install -r backend/requirements.txt`） |
 | 自己的域名连不上 | 设置 `NEUROSENSE_ALLOWED_ORIGINS` |
-| 端口 8000 被占用 | 关掉另一个还在运行的 NeuroSense 窗口 |
+| 端口 8000 被占用 | 不用处理：后端会自动改用 8001…8010，网页也会自动找到；想固定端口可设置 `NEUROSENSE_PORT` |

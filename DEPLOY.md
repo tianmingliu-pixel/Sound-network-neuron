@@ -55,4 +55,4 @@ $env:NEUROSENSE_ALLOWED_ORIGINS = "https://your-domain"
 | Safari cannot connect | Use Chrome / Edge / Firefox, or open `http://127.0.0.1:8000` directly |
 | File list works but "Disconnected, reconnecting…" | Make sure `uvicorn[standard]` is installed (`pip install -r backend/requirements.txt`) |
 | Own domain cannot connect | Set `NEUROSENSE_ALLOWED_ORIGINS` |
-| Port 8000 in use | Close the other NeuroSense window |
+| Port 8000 in use | Nothing to do: the backend switches to 8001…8010 automatically and the page finds it; set `NEUROSENSE_PORT` to pin a port |

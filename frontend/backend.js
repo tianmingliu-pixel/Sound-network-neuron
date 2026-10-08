@@ -8,7 +8,9 @@
 //   ④ 网站默认后端（config.js 里的 NEUROSENSE_API_BASE，默认为空）
 // 音频分析、识别、上传的文件都在后端所在的电脑上，网页本身不做计算。
 
-export const LOCAL = "http://127.0.0.1:8000";
+// 本机后端默认 8000；被占用时后端会自动改用 8001…8010，所以这些端口都会找一遍
+export const LOCAL_PORTS = Array.from({ length: 11 }, (_, i) => 8000 + i);
+export let LOCAL = "http://127.0.0.1:8000";
 export const REPO = "https://github.com/tianmingliu-pixel/Sound-network-neuron";
 const KEY = "neurosense.api";
 const SITE_DEFAULT = String(window.NEUROSENSE_API_BASE || "").replace(/\/+$/, "");
@@ -40,10 +42,14 @@ export async function resolveBackend() {
   const saved = readSaved();
   if (saved != null) { base = clean(saved); source = "manual"; return; }
   if (location.protocol.startsWith("http") && await probe("")) { base = ""; source = "same"; return; }
-  if (location.origin !== LOCAL && await probe(LOCAL)) { base = LOCAL; source = "local"; return; }
+  // 同时探测 8000–8010，取能连上的最小端口（旧版本占着 8000 时，会自动用上新版的 8001…）
+  const urls = LOCAL_PORTS.map((p) => `http://127.0.0.1:${p}`).filter((u) => u !== location.origin);
+  const ok = await Promise.all(urls.map((u) => probe(u)));
+  const hit = urls.find((_, i) => ok[i]);
+  if (hit) { base = LOCAL = hit; source = "local"; return; }
   base = SITE_DEFAULT;
   source = SITE_DEFAULT ? "remote" : "none";
-  // 本机有后端在运行、但不允许本网页连接 = 旧版本后端（启动于更新之前）
+  // 本机 8000 端口有服务在运行、但不允许本网页连接 = 旧版本 NeuroSense（更新前启动）
   if (source === "none" && location.origin !== LOCAL && await reachable(LOCAL)) source = "outdated";
 }
 

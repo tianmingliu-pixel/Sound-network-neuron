@@ -30,15 +30,6 @@ if errorlevel 1 (
   )
 )
 
-rem If an older NeuroSense backend is still running on port 8000, stop it so the new code is used.
-rem Only processes that answer like NeuroSense (/api/files) are stopped.
-curl -s -m 2 http://127.0.0.1:8000/api/files 2>nul | findstr /c:"\"files\"" >nul 2>nul
-if not errorlevel 1 (
-  echo [NeuroSense] An older NeuroSense backend is running on port 8000 - stopping it ...
-  for /f "tokens=5" %%p in ('netstat -ano ^| findstr /r /c:"127.0.0.1:8000 .*LISTENING"') do taskkill /F /PID %%p >nul 2>nul
-  timeout /t 1 /nobreak >nul
-)
-
-start "" http://127.0.0.1:8000
-"%PY%" server.py
+rem server.py picks a free port (8000-8010) and opens the browser itself
+"%PY%" server.py --open
 pause

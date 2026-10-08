@@ -55,4 +55,4 @@ $env:NEUROSENSE_ALLOWED_ORIGINS = "https://내-도메인"
 | Safari에서 연결 안 됨 | Chrome / Edge / Firefox 사용 또는 `http://127.0.0.1:8000` 직접 열기 |
 | 파일 목록은 보이지만 "Disconnected, reconnecting…" | `uvicorn[standard]` 설치 확인(`pip install -r backend/requirements.txt`) |
 | 자체 도메인 연결 안 됨 | `NEUROSENSE_ALLOWED_ORIGINS` 설정 |
-| 8000 포트 사용 중 | 다른 NeuroSense 창 닫기 |
+| 8000 포트 사용 중 | 따로 할 일 없음: 백엔드가 8001…8010으로 자동 전환하고 페이지도 자동으로 찾습니다. 포트를 고정하려면 `NEUROSENSE_PORT` 설정 |
